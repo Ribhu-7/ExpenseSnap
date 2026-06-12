@@ -1,6 +1,6 @@
 # PRD:
 
-[prd.md](file;file:///Users/neosoft/Documents/ExpenseSnap/Vibe-Coding/Vibe-coding/Agent/prd.md) refer to this file and then do this Role: Senior Product Manager & Technical Architect
+[prd.md] refer to this file and then do this Role: Senior Product Manager & Technical Architect
 Context: I have an existing MVP for an app called "ExpenseSnap". 
 Current MVP Scope:
 - Target User: Freelancers transitioning from manual notebook tracking.
@@ -29,8 +29,15 @@ PRD Output Format Required:
 2. Solution Overview
 3. User Flow4. API Design5. Edge Cases6. KPIs (Success Metrics or Acceptance Criterias)7. Limitations , want all the functionalities in one format together dont make different 7 format for each new feature
 
-combine [prd.md](file;file:///Users/neosoft/Documents/ExpenseSnap/Vibe-Coding/Vibe-coding/Agent/prd.md) and [prd_v2_advanced_features.md](file;file:///Users/neosoft/Documents/ExpenseSnap/Vibe-Coding/Vibe-coding/Agent/prd_v2_advanced_features.md) into one file so that it represents one single prd and not different and include all the features mentioned in both like 1 problem statement should have both files problem statement , main function is to build the website which has both the file's features into one
+combine [prd.md] and [prd_v2_advanced_features.md] into one file so that it represents one single prd and not different and include all the features mentioned in both like 1 problem statement should have both files problem statement , main function is to build the website which has both the file's features into one
 
 
 # KPI:
-[prd.md](file;file:///Users/neosoft/Documents/ExpenseSnap/Vibe-Coding/Vibe-coding/Agent/prd.md) refer to this update my kpi.md with the new features added
+[prd.md]refer to this update my kpi.md with the new features added
+
+# Scope:
+[prd.md][kpi.md] refer to both the files and update my [scope.md]file with the updated features
+
+# Persona:
+[prd.md] [kpi.md] refer to this files and update my [persona] folder files accordingly 
+

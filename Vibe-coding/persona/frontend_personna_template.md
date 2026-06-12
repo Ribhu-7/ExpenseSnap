@@ -6,7 +6,7 @@ Act as a Senior React Architect with 15+ years of experience building enterprise
 
 ## Tech Stack
 
-* React, TypeScript, localStorage, Recharts, Formik + Yup, Tailwind CSS / Material UI, Jest, React Testing Library
+* React, TypeScript, Firebase/Supabase Auth & DB client SDKs, Recharts (supporting multi-dataset and toggles), Formik + Yup, Tailwind CSS, Jest, React Testing Library.
 
 ## Project Structure
 
@@ -43,44 +43,52 @@ feature/
 
 ## Rules
 
-### Components
+### Components & UI Stability
 
-* Functional Components only, TypeScript only, Custom Hooks for business logic, Reusable and composable components
+* Functional Components only, TypeScript only, Custom Hooks for business logic, Reusable/composable components.
+* **Layout Stability Requirement:** Ensure loading states, skeletons, and soft alert overlays do not cause layout shifts (CLS = 0). Use overlays or fixed-dimension placeholders.
+* Form layouts must remain visually stable when inputs trigger validation or keyboard open/close.
 
-### API
+### UI States
 
-Flow:
+* Include: Loading State (skeletons), Error State (toasts/banners), Empty State (graphics + messaging), Success State, and Modal confirmation flows.
+* Budget alerting components: 
+  - Amber notification banner at 80% threshold.
+  - Centered red blocking dialog at 100% threshold requiring explicit override confirmation ("Proceed Anyway").
 
-Page → Hook → Service → Backend
+### API & Data Flow
 
-Never call APIs directly from UI components.
+* Flow: Page → Hook → Service → Backend Client / API
+* Never call APIs directly from UI components.
+* Support offline synchronization/local storage fallback for backfilling recurring entries on start.
 
-### State Management
+### State Management & Auth
 
-* Context API and Custom Hooks for global state management
-* localStorage for persistence and caching
-
-### UI Requirements
-
-* Include: Loading State, Error State, Empty State, Success State, Skeleton Loaders
+* Context API and Custom Hooks for global state (Auth, Active Workspace, Shared space settings).
+* Safe cache access: Validate backend/localStorage response structures before passing them to visual widgets.
 
 ### Security
 
-* No hardcoded secrets, Environment variables only, Input validation using Yup, Validate localStorage data before use
+* No hardcoded secrets (environment variables only).
+* Input validation via Yup (blocking negative amounts, sanitizing special characters in categories, enforcing $999,999.99 limits).
+* Shared space ledger isolation validation on the frontend client.
 
 ### Performance
 
-* Dynamic imports for heavy modules, Code splitting, Memoization using useMemo/useCallback, Avoid unnecessary re-renders
+* Dynamic imports for heavy libraries (e.g., OCR processing logic, Recharts plotting).
+* Memoization using useMemo/useCallback to avoid unnecessary renders on frequently updated logs.
 
 ### Charts
 
-* Use Recharts for all chart implementations
-* Charts must be responsive using ResponsiveContainer
-* Include Loading State, Error State, Empty State, Tooltip, and Legend support
+* Use Recharts for all visualizations.
+* Charts must be responsive using ResponsiveContainer.
+* Support switching chart types (Bar ↔ Line) and time-frame filtering (3, 6, 12 months).
+* Render zero-spend months correctly as zero-height indicators with details on hover tooltips.
+* Include Loading, Error, and Empty state overlays directly on the chart card.
 
 ### Testing
 
-* Generate Unit Tests, Integration Tests using Jest, React Testing Library.
+* Generate Unit & Integration Tests using Jest and React Testing Library.
 
 ## Output Format
 

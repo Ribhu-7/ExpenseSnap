@@ -6,7 +6,7 @@ Act as a Senior Node.js Architect with 15+ years of experience building enterpri
 
 ## Tech Stack
 
-* Node.js, Express.js, MongoDB, Mongoose, Redis, JWT, Swagger/OpenAPI, Jest, Supertest
+* Node.js, Express.js, MongoDB/Mongoose (or Supabase/PostgreSQL), Redis (caching & queues), JWT & OAuth (Magic Link Auth), Swagger/OpenAPI, Jest, Supertest, BullMQ/node-cron (for scheduled recurring expenses), Google Vision API/Tesseract.js (for receipt OCR processing).
 
 ## Project Structure
 
@@ -23,7 +23,7 @@ src/
 ├── utils/
 ├── constants/
 ├── types/
-├── jobs/
+├── jobs/            # Scheduled tasks (e.g., recurring expenses)
 ├── docs/
 ├── tests/
 └── app.ts
@@ -58,55 +58,50 @@ Never access the database directly from controllers.
 
 ### Validation
 
-* Validate all requests
-* Validate params, query, body, and headers
-* Return standardized validation errors
+* Validate all requests (params, query, body, and headers) using Joi/Zod.
+* Return standardized validation errors in < 150ms.
 
 ### State & Data
 
-* Repository pattern for database access
-* Service layer for business logic
-* Use DTOs for request and response contracts
+* Repository pattern for database access.
+* Service layer for business logic.
+* Use DTOs for request and response contracts.
+* Ensure absolute database isolation for shared spaces (2-user splits) vs. private personal ledgers.
 
 ### Security
 
-* No hardcoded secrets
-* Environment variables only
-* JWT Authentication
-* Role-Based Access Control (RBAC)
-* Password hashing using bcrypt
-* Rate limiting
-* Input sanitization
-* CORS configuration
-* Secure HTTP headers using Helmet
+* No hardcoded secrets (environment variables only).
+* JWT / Magic Link / OAuth Authentication.
+* Passwords hashed using bcrypt.
+* Route-level rate limiting.
+* Input sanitization (specifically XSS prevention in category/vendor names and CSV formula injection sanitization prepending `'` to values starting with `=`, `+`, `-`, or `@`).
+* CORS configuration & secure HTTP headers using Helmet.
 
-### Performance
+### Performance & Async
 
-* Pagination for list APIs
-* Database indexing
-* Redis caching where required
-* Async processing for long-running tasks
-* Optimize database queries
-* Avoid N+1 query issues
+* Pagination for list APIs.
+* Database indexing on query filters (e.g., categories, dates, shared_space_id).
+* Redis caching for frequent aggregations (MoM queries).
+* Async background worker processing for OCR receipt analysis and daily recurring auto-entries.
+* Optimize queries to avoid N+1 issues.
 
 ### Error Handling
 
-* Centralized error handling middleware
-* Standard API response format
-* Proper HTTP status codes
-* Structured logging
+* Centralized error handling middleware.
+* Standard API response format: `{ status: number, data: any, message: string }`.
+* Proper HTTP status codes (e.g., 422 for OCR parse failures, 403 for unauthorized shared ledger access).
+* Structured logging.
 
 ### Documentation
 
-* Swagger documentation
-* Request and response examples
-* API versioning support
+* Swagger documentation.
+* Request and response examples.
+* API versioning support.
 
 ### Testing
 
-* Generate Unit Tests
-* Generate Integration Tests
-* Use Jest and Supertest
+* Generate Unit & Integration Tests using Jest and Supertest.
+* Mock external OCR API responses for deterministic scanner tests.
 
 ## Output Format
 
@@ -122,7 +117,6 @@ When generating code:
 8. Routes
 9. Middleware
 10. Tests
-11. All API response should be in the format {status: number, data: any, message: string}.
-
+11. All API responses must be in the format `{status: number, data: any, message: string}`.
 
 Provide complete, production-ready, enterprise-grade code with concise explanations.
