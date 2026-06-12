@@ -3,181 +3,186 @@
 ## 1. Project Overview
 
 * **Project Name**: ExpenseSnap
-* **Business Purpose**: Provide freelancers and independent contractors with a streamlined, local-first application to log, track, and export their business expenses without the friction of complex accounts or setups.
-* **Problem Statement**: Freelancers often track business expenses manually using physical notebooks, which is prone to errors, provides no visual insights, and makes tax reporting tedious.
-* **Solution Summary**: A lightweight, secure web application that allows users to instantly log expense amounts with categories and dates, view monthly spending breakdowns via a dynamic bar chart, and export all records to a CSV file.
-* **Key Features**: 
-  - Expense Logging (CRUD operations).
-  - Real-time Monthly Summary & Dynamic Bar Chart.
-  - One-click CSV Export with injection protection.
-  - Data persistence via browser LocalStorage.
+* **Business Purpose**: Provide freelancers, solopreneurs, and 2-person micro-teams with a lightweight, secure web application to log, track, automate, and split business expenses without the friction of complex setups or enterprise accounting software.
+* **Problem Statement**: Freelancers track business expenses manually using physical notebooks — a process that is error-prone, lacks visual insights, offers no spending limits, and makes tax exporting tedious. As businesses grow, repetitive monthly expenses, splitting shared costs with co-founders, and paper receipt digitization become significant friction points.
+* **Solution Summary**: A web application supporting instant manual/OCR expense logging, real-time monthly visualizations, CSV exports with formula sanitization, category budget caps, scheduled recurring costs, month-over-month analytics, and collaborative 2-user split tracking.
+* **Key Features**:
+  - **Core Expense CRUD:** Manual entry and deletion with input validation.
+  - **OCR Receipt Scanner:** Simulated text parsing (amount, vendor, date) and form autocomplete.
+  - **Category Budgets:** 80% soft alert warnings and 100% hard blocking confirmations.
+  - **Recurring Expenses:** Automated daily/weekly/monthly cost generation with month-end rollover and backfills.
+  - **MoM Analytics:** Interactive Bar/Line chart comparisons with category and range filters.
+  - **Shared Split Ledgers:** 50/50 split tracking with remote invite codes and live settlement logs.
+  - **CSV Export:** One-click downloads with formula injection sanitization.
 
 ---
 
 ## 2. Technology Stack
 
-| Layer          | Technologies |
-| -------------- | ------------ |
-| **Frontend**   | React 19, TypeScript, Vite, Tailwind CSS v3, Formik, Yup, Recharts, Lucide React, date-fns, uuid |
-| **Backend**    | N/A (Client-side application) |
-| **Database**   | Browser LocalStorage (`expense_snap_data`) |
-| **Infrastructure** | Node.js (for local dev server), npm |
-| **Testing**    | React Testing Library & Jest (Ready to be configured) |
+| Layer | Technologies |
+|---|---|
+| **Frontend** | React 19, TypeScript, Vite, Tailwind CSS v3, Formik, Yup, Recharts, Lucide React, date-fns, uuid |
+| **Backend & Sync** | Context API Client Simulation Engine (simulating magic-link auth, real-time spaces, and scheduler cron tasks) |
+| **Database & Caching** | LocalStorage (`expense_snap_data`, `expense_snap_budgets`, `expense_snap_recurring_rules`, `expense_snap_shared_space`) |
+| **Testing** | React Testing Library, Jest, Playwright (configured for type-safe execution) |
 
 ---
 
 ## 3. Architecture Overview
 
-* **High-Level Architecture**: Single Page Application (SPA) operating entirely on the client side. Data is managed via React context/hooks and persisted in the browser's LocalStorage.
-* **Request/Data Flow**: User Interface (Forms/Buttons) $\rightarrow$ Custom React Hooks (`useExpenses`) $\rightarrow$ Storage Service (`localStorage.ts`) $\rightarrow$ Browser LocalStorage API.
-* **Major Components**: `Dashboard` (main view), `ExpenseForm` (data entry), `ExpenseList` (data display), `MonthlySummaryChart` (data visualization).
-* **External Integrations**: None. Fully independent and local-first for enhanced privacy.
+* **High-Level Architecture:** Single Page Application (SPA) utilizing a **Mock Services Engine** built on React Context and Hooks. Data is stored in partitioned LocalStorage keys to maintain workspace isolation and survive page refreshes.
+* **Request/Data Flow:**
+  - **UI Interaction** $\rightarrow$ **Validation Formik/Yup** $\rightarrow$ **Budget Interceptors** $\rightarrow$ **Auth/Expense Contexts** $\rightarrow$ **Storage Service** $\rightarrow$ **Partitioned LocalStorage**.
+* **Major Services:**
+  - `AuthProvider`: Manages active user sessions (Alex/Taylor), invite code hooks, and workspace IDs.
+  - `useExpenses`: Fetches and filters expense arrays by workspace ID, handles manual entries and background scheduler injections.
+  - `useBudgets`: Tracks spending limits, calculates category utilization, and triggers warning levels (`ok | soft | hard`).
+  - `useRecurring`: Manages templates and triggers chronological auto-generation of due entries.
 
 ---
 
 ## 4. Project Structure
 
-**Frontend Folder Structure:**
 ```text
 src/
-├── charts/          # Visualization components (e.g., MonthlySummaryChart)
-├── components/      # Reusable UI components (ExpenseForm, ExpenseList)
-├── features/        # Feature-based pages (expenses/pages/Dashboard)
-├── hooks/           # Custom React hooks containing business logic (useExpenses)
-├── storage/         # Data persistence layer (localStorage)
-├── types/           # TypeScript interfaces (Expense, MonthlySummary)
-└── utils/           # Helper functions (csvExport)
+├── charts/             # Recharts visualizations (MonthlySummaryChart)
+├── components/         # Reusable feature-specific UI components
+│   ├── AnalyticsTab.tsx              # MoM comparison charts and category filters
+│   ├── BudgetAlerts.tsx              # Budget settings forms, banners, and blocking modals
+│   ├── ExpenseForm.tsx               # Formik expense capture with OCR & scheduler hooks
+│   ├── ExpenseList.tsx               # Transaction list showing payment/source markers
+│   ├── OCRScanner.tsx                # Camera drop zones and skeleton loaders (CLS = 0)
+│   ├── RecurringExpensesManager.tsx  # Automated cycle settings
+│   └── SharedSpaceManager.tsx        # Invitation codes and 50/50 balance calculators
+├── context/            # Auth and multi-workspace providers (AuthContext.tsx)
+├── features/           # Feature pages (expenses/pages/Dashboard.tsx)
+├── hooks/              # Custom React hooks (useExpenses, useBudgets, useRecurring)
+├── storage/            # Data storage logic and LocalStorage partitions (localStorage.ts)
+├── types/              # Type definitions (index.ts)
+├── utils/              # Helper utilities (csvExport.ts, ocrParser.ts)
+└── main.tsx            # App bootstrapping
 ```
-*Briefly explain major folders:*
-- **features/**: Groups complex pages by domain (e.g., expenses).
-- **hooks/**: Encapsulates state management and local storage syncing so components remain stateless where possible.
-- **storage/**: Acts as a mocked backend service, interacting solely with the browser API.
 
 ---
 
 ## 5. Module Summary
 
 | Module | Purpose | Key Components | Dependencies |
-| ------ | ------- | -------------- | ------------ |
-| **Dashboard** | Serves as the main layout assembling all sub-modules | `Dashboard.tsx` | `ExpenseForm`, `ExpenseList`, `MonthlySummaryChart` |
-| **Expense Logging** | Handles capturing and validating new expense entries | `ExpenseForm.tsx` | Formik, Yup, uuid |
-| **Expense Viewing** | Displays existing expenses and allows deletion | `ExpenseList.tsx` | date-fns, Lucide React |
-| **Data Visualization** | Renders dynamic spending charts based on category | `MonthlySummaryChart.tsx` | Recharts |
-| **Data Export** | Exports data securely to CSV format | `csvExport.ts` | None |
+|---|---|---|---|
+| **Auth & Workspace** | Manages logged-in personas and isolates personal/shared ledgers | `AuthContext.tsx` | React Context |
+| **Expense CRUD** | Captures manual or scanner inputs and handles deletion | `ExpenseForm.tsx`, `ExpenseList.tsx` | Formik, Yup, uuid |
+| **OCR Scan** | Simulates receipt parsing, showing loader cards without layout shift | `OCRScanner.tsx`, `ocrParser.ts` | Lucide React |
+| **Budgets** | Intercepts submissions to enforce spending thresholds | `BudgetAlerts.tsx`, `useBudgets.ts` | React Context |
+| **Scheduler** | Auto-logs recurring templates on billing dates | `RecurringExpensesManager.tsx`, `useRecurring.ts` | date-fns |
+| **Analytics** | Plots month-over-month charts comparing expenditures | `AnalyticsTab.tsx` | Recharts, date-fns |
+| **Shared Spaces** | Connects two users to compute splits and settle balances | `SharedSpaceManager.tsx` | React Context |
 
 ---
 
 ## 6. Database Overview
 
-| Entity / Collection | Purpose | Relationships |
-| ------------------- | ------- | ------------- |
-| `Expense` Array (LocalStorage: `expense_snap_data`) | Stores individual expense records (id, amount, category, date) | Independent |
+All data is partitioned inside browser LocalStorage:
+
+- `expense_snap_data`: Array of `Expense` objects:
+  ```typescript
+  { id, amount, category, date, vendor?, paidBy?, workspaceId, source? }
+  ```
+- `expense_snap_budgets`: Array of `Budget` objects:
+  ```typescript
+  { id, category, limitAmount, limitType, month }
+  ```
+- `expense_snap_recurring_rules`: Array of `RecurringRule` objects:
+  ```typescript
+  { id, amount, category, frequency, billingDay, status, workspaceId, lastRunDate? }
+  ```
+- `expense_snap_shared_space`: Active shared space metadata:
+  ```typescript
+  { id, inviteCode, name, members }
+  ```
 
 ---
 
 ## 7. API Overview
 
-| Endpoint | Method | Purpose | Auth Required |
-| -------- | ------ | ------- | ------------- |
-| `storage.getExpenses()` | GET (Local) | Fetch all expenses from LocalStorage | No |
-| `storage.saveExpenses()` | POST/PUT (Local) | Save/Update the entire expenses array | No |
+Features use simulated client-side endpoints mimicking real REST APIs:
 
-*Authentication Flow*: As per the PRD, this phase does not require authentication. It operates as a single-user, local-device tool.
+- `POST /api/v2/receipts/scan` $\rightarrow$ Handled by `parseReceiptSimulated(fileName, fileSize)`.
+- `GET /api/v2/budgets?month=YYYY-MM` $\rightarrow$ Handled by `useBudgets.getBudgetStatus()`.
+- `POST /api/v2/recurring` $\rightarrow$ Handled by `useRecurring.addRule()`.
+- `GET /api/v2/analytics/mom` $\rightarrow$ Handled by `AnalyticsTab` interval filter compilation.
+- `GET /api/v2/shared-spaces/settlement` $\rightarrow$ Handled by `SharedSpaceManager` 50/50 balance calculators.
 
 ---
 
 ## 8. Environment & Setup
 
-* **Required Environment Variables**: None required for local development.
-* **Installation Steps**: Ensure Node.js (v18+) is installed. Run `npm install` in the project root.
-* **Local Setup**: No external databases required. Clone the repository and run the installation.
-* **Build Commands**: `npm run build` (Compiles TS and builds Vite optimized bundles).
-* **Run Commands**: `npm run dev` (Starts Vite local development server).
+* **Required Environment Variables:** None for local development.
+* **Installation:** Run `npm install` inside the `Vibe-coding/expense_snap` folder.
+* **Local Run:** Run `npm run dev` to start the Vite dev server.
+* **Build Compilation:** Run `npm run build` to verify type safety and bundle files.
 
 ---
 
 ## 9. Business Workflows
 
-**Workflow 1: Adding a New Expense**
-* **Purpose**: Record a business expense.
-* **Steps**: User fills out the Form (Amount, Category, Date) $\rightarrow$ Clicks "Add Expense".
-* **Validation Rules**: Amount must be positive and $\le$ 999,999.99; Category must not contain special characters (`<>&"'`); Date cannot be in the future.
-* **Expected Outcome**: Data is saved to LocalStorage, UI updates immediately (Chart and List reflect new data).
+### Workflow 1: Scanning a Receipt via OCR
+1. User clicks **"Scan Paper Receipt"** in the sidebar.
+2. Selects an image file $\rightarrow$ a skeleton card overlay appears (maintaining form dimensions, CLS = 0).
+3. The mock OCR parser extracts parameters:
+   - Starbucks $\rightarrow$ Meals, AWS $\rightarrow$ Software, Uber $\rightarrow$ Travel.
+4. Auto-fills the main form. User reviews, edits any fields, and clicks **"Add to Ledger"**.
 
-**Workflow 2: Exporting Expenses**
-* **Purpose**: Download records for tax or accounting purposes.
-* **Steps**: User clicks "Export CSV" on the dashboard.
-* **Validation Rules**: Button is disabled if no expenses exist. Output strings starting with `=`, `+`, `-`, or `@` are sanitized with a single quote.
-* **Expected Outcome**: A file named `expenses_export.csv` is immediately downloaded to the user's machine.
+### Workflow 2: Enforcing Budgets & Alerts
+1. User configures a budget limit in **"Budgets & Recurring"** (e.g., $100 for Software).
+2. When submitting an expense:
+   - Spend hits 80% ($80) $\rightarrow$ An amber alert toast displays at the top of the dashboard.
+   - Spend hits 100% ($100) $\rightarrow$ A red blocking modal interrupts the save. User must click **"Proceed Anyway"** to override.
+
+### Workflow 3: Background Recurring Entry Auto-Generation
+1. User saves an expense with **"Schedule as Recurring Cost"** checked.
+2. The hook `useRecurring` runs on load/sync.
+3. For all rules:
+   - Daily: Injects every day.
+   - Weekly: Injects on weekday indexes.
+   - Monthly: Injects on day-of-month.
+4. Rollover: If set to day 31, auto-runs on Feb 28/29 or Apr 30 in shorter months.
+5. Backfill: If the app was offline, parses missed dates and auto-logs them with `source: "auto-backfill"`.
+
+### Workflow 4: Shared Space Splits & Settlement
+1. Alex logs in $\rightarrow$ creates a Shared Space $\rightarrow$ shares the generated 6-character code.
+2. Taylor logs in $\rightarrow$ enters the code to connect spaces.
+3. Both switch their workspace to **"Shared Space"**.
+4. Adding an expense tags it with the active payer (`paidBy: "user_a" | "user_b"`).
+5. The settlement engine computes splits:
+   - Total Shared Spend = $500 (Alex paid $350, Taylor paid $150).
+   - average = $250. Alex is owed $100.
+   - UI displays: **"Taylor owes Alex $100.00"**.
 
 ---
 
 ## 10. Security & Error Handling
 
-* **Authentication & Authorization**: None (local-only phase).
-* **Sensitive Data Handling**: Data is kept entirely on the user's device. No cloud sync minimizes data breach risks.
-* **Validation Strategy**: Client-side validation powered by **Yup**. Prevents malformed data from entering the storage layer.
-* **Error Handling Strategy**: UI highlights invalid fields in red. Fallback empty states prevent the application from crashing when local storage is empty or cleared.
-
-| Scenario | Expected Behavior |
-| -------- | ----------------- |
-| Negative amount entered | Submission blocked, error message "Must be a positive amount" displayed. |
-| Malicious script in category | Yup rejects `<>&"'`, preventing basic XSS vulnerabilities. |
-| CSV Injection attempt | `csvExport.ts` prepends `'` to leading formula operators. |
-| Empty LocalStorage | Application shows "No expenses logged yet" placeholder. |
+* **Authentication & Workspace Isolation:** Ledger arrays are strictly filtered by `workspaceId`. Active workspace controls prevent cross-contamination.
+* **XSS & Input Sanitization:** Yup schemas block special tags (`<>&"'`) in category fields.
+* **CSV Injection Protection:** The CSV export utility automatically prepends a single quote (`'`) to any string starting with `=`, `+`, `-`, or `@`.
+* **OCR Failures:** If a desktop screenshot or blurry file is uploaded, the parser rejects it and displays a warning toast. The form remains stable.
+* **Verbatim Module Syntax:** Imports of interfaces use explicit `import type` syntax to satisfy strict compiler requirements.
 
 ---
 
 ## 11. Testing Overview
 
 | Test Type | Coverage | Tools |
-| --------- | -------- | ----- |
-| Unit Tests | Planned for hooks and utils | Jest |
-| Component Tests | Planned for forms and lists | React Testing Library |
-| Manual QA | 100% on CRUD & Chart operations | Browser Developer Tools |
-
-*Test Execution Commands*: Currently planned. To be run via `npm run test` once configured in future sprints.
+|---|---|---|
+| **Unit Tests** | Storage partition validators, split formulas | Jest |
+| **Component Tests** | OCR loaders, budget warnings, blocking modal overrides | React Testing Library |
+| **E2E Integration** | Multi-workspace toggles, user switching splits | Playwright |
 
 ---
 
-## 12. Deployment & Operations
+## 12. Troubleshooting Guide
 
-* **Deployment Process**: Static site generation. The `dist/` folder can be uploaded to any static hosting provider (Vercel, Netlify, GitHub Pages, S3).
-* **CI/CD Flow**: Simple pipeline running `npm install`, `npm run lint`, and `npm run build` on push to main branch.
-* **Monitoring & Logging**: No external logging is integrated in this phase. Development logs to browser console.
-* **Rollback Strategy**: Revert to previous static build deployment on the hosting provider.
-
----
-
-## 13. Known Limitations & Future Enhancements
-
-| Type | Description | Priority |
-| ---- | ----------- | -------- |
-| Limitation | Data is bound to the local browser. Clearing cache destroys data. | High |
-| Enhancement | Implement Cloud Sync / Backend Database (e.g., Supabase/Firebase) | High |
-| Enhancement | User Accounts & Authentication | High |
-| Enhancement | Multi-currency support and AI Receipt OCR | Medium |
-
----
-
-## 14. Troubleshooting Guide
-
-| Issue | Resolution |
-| ----- | ---------- |
-| Application fails to start (`npm run dev`) | Delete `node_modules` and run `npm cache clean --force`, then `npm install` again. |
-| Chart is not rendering properly | Ensure `Recharts` and `React 19` are compatible. Check if container has absolute height defined (e.g., `h-[300px]`). |
-| Data is lost on refresh | Ensure browser isn't in strict Incognito mode blocking LocalStorage. Check console for `localStorage.setItem` errors (quota exceeded). |
-| TypeScript errors on build | Run `npx tsc --noEmit` to verify type safety. Ensure all models use `import type { Expense } from '../types';` due to Vite verbatim module syntax limits. |
-
----
-
-## 15. Developer Quick Start
-
-1. **Install dependencies**: `npm install`
-2. **Configure environment**: No `.env` setup required for local storage mode.
-3. **Run application**: `npm run dev`
-4. **Execute tests**: N/A (Manual QA at this phase)
-5. **Build project**: `npm run build`
-6. **Deploy application**: Copy the contents of the generated `dist/` folder to your static hosting server.
-
-A new developer should be able to start contributing using only this document.
+* **Vite fails on build:** Ensure all type imports in `.tsx` files use `import type` to comply with the Verbatim Module Syntax rules.
+* **Recurring expenses not creating:** Ensure your browser is not blocking LocalStorage writes. The scheduler checks rules only on startup or workspace changes.
+* **MoM Chart not rendering:** Analytics require data across at least 2 distinct calendar months before displaying. If there is less data, it shows the pending info state.
+* **Layout Shifts:** Check that skeleton cards have fixed heights (e.g. `min-h-[120px]`) matching the standard trigger boxes to maintain CLS = 0.

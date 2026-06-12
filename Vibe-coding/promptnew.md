@@ -41,9 +41,6 @@ combine [prd.md] and [prd_v2_advanced_features.md] into one file so that it repr
 # Persona:
 [prd.md] [kpi.md] refer to this files and update my [persona] folder files accordingly 
 
-#
-
-
 # Implementation:
 [Agent] refering to all files in this folder make adjustments in the [expense_snap] folder and update the code by updating the features added
 The 5 advanced functionalities have been integrated into the code.
@@ -54,3 +51,6 @@ Budget Alerts: Generates soft amber warnings at 80% and red blocking dialogs at 
 Recurring Expenses: Automates entries, supporting rollover logic for shorter months and startup backfills.
 Analytics Tab: Renders Line/Bar comparison charts with category filtering and MoM tooltips.
 Shared Mode: Supports 2-user magic-link workspaces with 50/50 splits and settlement computations.
+
+# Work Flow
+now refer to the [Agent] folder and update my [workflow_document.md] accordingly for the complete workflow of the project
