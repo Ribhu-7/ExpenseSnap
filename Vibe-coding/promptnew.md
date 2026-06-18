@@ -54,3 +54,8 @@ Shared Mode: Supports 2-user magic-link workspaces with 50/50 splits and settlem
 
 # Work Flow
 now refer to the [Agent] folder and update my [workflow_document.md] accordingly for the complete workflow of the project
+
+
+# Testing:
+[Agent] refer to this files in this folder and create crisp test cases and also test them
+create a test file for testing the project according to the test cases mentioned
