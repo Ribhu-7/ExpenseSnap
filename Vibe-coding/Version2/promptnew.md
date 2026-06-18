@@ -59,3 +59,10 @@ now refer to the [Agent] folder and update my [workflow_document.md] accordingly
 # Testing:
 [Agent] refer to this files in this folder and create crisp test cases and also test them
 create a test file for testing the project according to the test cases mentioned
+
+# New Updates
+[prd.md] refer to this file and add login authentication feature which includes backend db connection as well with postregesql , replace local storage everything with database , and update it accordingly
+
+[prd.md] refer to this file and add login authentication feature which includes backend db connection as well with postregesql , replace local storage everything with database , and update it accordingly
+
+
