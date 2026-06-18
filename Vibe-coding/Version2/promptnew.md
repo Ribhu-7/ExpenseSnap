@@ -78,3 +78,7 @@ give me the full walkthrough of running db , backend and frontend for starting a
 do the testing of the authentication because it is not working, fix it 
 
 test the project as shared expenses page is not opening please fix it 
+
+test the entire project by creating test files and update the test cases status in [test_execution_report.md]
+
+create test cases and test file for testing the authentication as well and add status in the test_execution_report there as well , there is error in setup.ts fix that as well
