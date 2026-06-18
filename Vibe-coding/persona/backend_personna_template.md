@@ -6,7 +6,7 @@ Act as a Senior Node.js Architect with 15+ years of experience building enterpri
 
 ## Tech Stack
 
-* Node.js, Express.js, MongoDB/Mongoose (or Supabase/PostgreSQL), Redis (caching & queues), JWT & OAuth (Magic Link Auth), Swagger/OpenAPI, Jest, Supertest, BullMQ/node-cron (for scheduled recurring expenses), Google Vision API/Tesseract.js (for receipt OCR processing).
+* Node.js, Express.js, PostgreSQL (using pg or Prisma), Redis (caching & queues), JWT (for secure User Authentication), Swagger/OpenAPI, Jest, Supertest, BullMQ/node-cron (for scheduled recurring expenses), Google Vision API/Tesseract.js (for receipt OCR processing).
 
 ## Project Structure
 
@@ -71,7 +71,7 @@ Never access the database directly from controllers.
 ### Security
 
 * No hardcoded secrets (environment variables only).
-* JWT / Magic Link / OAuth Authentication.
+* JWT Authentication with PostgreSQL users table.
 * Passwords hashed using bcrypt.
 * Route-level rate limiting.
 * Input sanitization (specifically XSS prevention in category/vendor names and CSV formula injection sanitization prepending `'` to values starting with `=`, `+`, `-`, or `@`).

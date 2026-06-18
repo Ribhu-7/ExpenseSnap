@@ -6,7 +6,7 @@ Act as a Senior React Architect with 15+ years of experience building enterprise
 
 ## Tech Stack
 
-* React, TypeScript, Firebase/Supabase Auth & DB client SDKs, Recharts (supporting multi-dataset and toggles), Formik + Yup, Tailwind CSS, Jest, React Testing Library.
+* React, TypeScript, REST API clients (for PostgreSQL/Node.js backend), Recharts (supporting multi-dataset and toggles), Formik + Yup, Tailwind CSS, Jest, React Testing Library.
 
 ## Project Structure
 
@@ -60,7 +60,7 @@ feature/
 
 * Flow: Page → Hook → Service → Backend Client / API
 * Never call APIs directly from UI components.
-* Support offline synchronization/local storage fallback for backfilling recurring entries on start.
+* Build robust loading states to handle API latency with the PostgreSQL backend.
 
 ### State Management & Auth
 

@@ -2,12 +2,13 @@
  
 For EACH identified module:
  
-#### Module 1: Expense CRUD Module (Operational & Data Integrity)
+#### Module 1: Auth & Expense CRUD Module (Operational, Data Integrity & Security)
  
 | KPI Number | KPI Name | Description | Criteria |
 | --- | --- | --- | --- |
+| KPI-AUTH-01 | Login/Register Latency | Measures API response time for authentication requests. | Auth API responses in < 200ms. |
 | KPI-CRUD-01 | Input Validation Latency | Measures UI responsiveness to invalid input submission. | Border highlight and warning message display in < 150ms. |
-| KPI-CRUD-02 | In-Memory CRUD Latency | Tracks speed of saving/deleting records in array. | Array updates and state change triggers occur in < 50ms. |
+| KPI-CRUD-02 | Database CRUD Latency | Tracks speed of saving/deleting records in PostgreSQL database. | Database updates and state change triggers occur in < 50ms. |
 | KPI-CRUD-03 | Form Fields Auto-Reset | Checks if the input form resets after submission. | Form resets to default empty inputs within 100ms of add event. |
  
 #### Module 2: Monthly Summary & Chart Module (Technical & UI/UX)
@@ -88,8 +89,9 @@ For EACH identified module:
  
 | KPI Number | KPI Name | Description | Criteria |
 | --- | --- | --- | --- |
+| KPI-AUTH-01 | Login/Register Latency | Measures API response time for authentication requests. | Auth API responses in < 200ms. |
 | KPI-CRUD-01 | Input Validation Latency | Measures UI responsiveness to invalid input submission. | Border highlight and warning message display in < 150ms. |
-| KPI-CRUD-02 | In-Memory CRUD Latency | Tracks speed of saving/deleting records in array. | Array updates and state change triggers occur in < 50ms. |
+| KPI-CRUD-02 | Database CRUD Latency | Tracks speed of saving/deleting records in PostgreSQL database. | Database updates and state change triggers occur in < 50ms. |
 | KPI-CRUD-03 | Form Fields Auto-Reset | Checks if the input form resets after submission. | Form resets to default empty inputs within 100ms of add event. |
 | KPI-CHART-01 | Chart Rendering Latency | Measures speed of re-rendering the SVG/Canvas bar chart. | Chart visual re-renders and displays new heights in < 100ms. |
 | KPI-CHART-02 | Aggregation Precision | Validates category summation logic. | Categorized totals show zero rounding errors (100% accuracy). |
@@ -135,7 +137,7 @@ For EACH identified module:
 
 | Sprint | Focus Area | Deliverables |
 | --- | --- | --- |
-| Sprint 1 | Core Setup & CRUD | React/TypeScript setup, Expense entry UI forms, local storage CRUD services, input validation, basic list view. |
+| Sprint 1 | Core Setup & Auth | React/TypeScript setup, Expense entry UI forms, PostgreSQL DB connection, User Auth APIs, input validation, basic list view. |
 | Sprint 2 | Charting & Summary | Charting library integration (Chart.js/Recharts), monthly aggregation logic, dynamic chart updates, responsiveness. |
 | Sprint 3 | Export & Polish | CSV download implementation, CSV injection sanitization, UI/UX polish, empty states, QA testing. |
 | Sprint 4 | OCR Receipt Scanner | Camera/file upload UI, OCR API integration (Google Vision/Tesseract.js), auto-fill form logic, confidence indicators, error handling. |

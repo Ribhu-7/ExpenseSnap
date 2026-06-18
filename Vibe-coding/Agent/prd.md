@@ -29,9 +29,10 @@
 
 | # | Feature | Priority | Category |
 |---|---|---|---|
-| F0a | Expense Logging (CRUD) | P0 | Core |
-| F0b | Monthly Summary & Bar Chart | P0 | Core |
-| F0c | CSV Export | P0 | Core |
+| F0a | User Authentication (Login/Signup) | P0 | Core |
+| F0b | Expense Logging (CRUD) | P0 | Core |
+| F0c | Monthly Summary & Bar Chart | P0 | Core |
+| F0d | CSV Export | P0 | Core |
 | F1 | OCR Receipt Scanner | P0 | Advanced |
 | F2 | Budget Limit Alerts | P0 | Advanced |
 | F3 | Recurring Expense Auto-Entry | P1 | Advanced |
@@ -40,6 +41,7 @@
 
 ### Core Features (F0)
 
+* **User Authentication:** Secure user login and registration backed by a PostgreSQL database.
 * **Expense Logging (CRUD):** Add, view, edit, and delete expenses containing amount, category, and date.
 * **Monthly Summary & Chart:** Real-time monthly summary showing total expenses grouped by category, alongside a dynamic bar chart.
 * **CSV Export:** One-click download of the entire expense log in standard CSV format.
@@ -54,9 +56,9 @@
 
 ### Architecture Considerations
 
-- **Auth:** F5 mandates user authentication; lightweight auth (email magic-link or OAuth) recommended as a platform prerequisite for F2–F5.
-- **Backend:** F3 (server-side scheduler) and F5 (shared ledger) require a persistent backend, upgrading the MVP local-storage-only approach.
-- **New Dependencies:** OCR API client (Google Vision / Tesseract.js), charting library with multi-dataset support, real-time pub/sub for F5.
+- **Auth:** Mandatory user authentication required for all features to securely partition user data in the PostgreSQL database.
+- **Backend:** A persistent backend using Node.js and PostgreSQL is required for all data storage, completely replacing any local-storage-only approaches.
+- **New Dependencies:** PostgreSQL driver (e.g., pg, Prisma), Auth libraries (e.g., JWT, bcrypt), OCR API client (Google Vision / Tesseract.js), charting library with multi-dataset support, real-time pub/sub for F5.
 
 ### Out of Scope
 
@@ -72,11 +74,12 @@
 ### F0 — Core Expense Tracking
 
 ```
-1. Freelancer incurs a business expense (e.g., client meeting coffee, software subscription).
-2. Opens ExpenseSnap dashboard.
-3. Clicks "Add Expense" → enters amount, selects/inputs category, selects date.
-4. System validates inputs, saves entry, dynamically updates monthly summary and bar chart.
-5. User clicks "Export to CSV" → CSV file downloads to local device.
+1. Freelancer opens ExpenseSnap and logs in to their account.
+2. Incurs a business expense (e.g., client meeting coffee, software subscription).
+3. Opens ExpenseSnap dashboard.
+4. Clicks "Add Expense" → enters amount, selects/inputs category, selects date.
+5. System validates inputs, saves entry to PostgreSQL DB, dynamically updates monthly summary and bar chart.
+6. User clicks "Export to CSV" → CSV file downloads to local device.
 ```
 
 ### F1 — OCR Receipt Scanner
@@ -157,7 +160,39 @@ User A taps "Create Shared Space"
 
 ## 4. API Design
 
-### F0 — Core Expense CRUD
+### F0 — Core Authentication & Expense CRUD
+
+**Register User**
+```
+POST /api/v1/auth/register
+Body:
+{
+  "email": "user@example.com",
+  "password": "securepassword123"
+}
+
+Response 200:
+{
+  "status": "success",
+  "data": { "token": "jwt_token_here", "user": { "id": "usr_001", "email": "user@example.com" } }
+}
+```
+
+**Login User**
+```
+POST /api/v1/auth/login
+Body:
+{
+  "email": "user@example.com",
+  "password": "securepassword123"
+}
+
+Response 200:
+{
+  "status": "success",
+  "data": { "token": "jwt_token_here", "user": { "id": "usr_001", "email": "user@example.com" } }
+}
+```
 
 **Create Expense**
 ```
@@ -487,7 +522,7 @@ DELETE /api/v2/shared-spaces/{id}/members/{user_id} → Leave space
 
 | Limitation | Impact | Mitigation |
 |---|---|---|
-| Local storage data loss (core MVP) | Data lost if browser cache cleared | Persistent backend upgrade (required for F3, F5) |
+| PostgreSQL database downtime | Users cannot log expenses or view data if the DB goes down | High availability setup, multi-AZ deployment, automated database backups |
 | OCR accuracy on handwritten/faded receipts | Misread amounts need manual correction | Confidence scoring + mandatory review step |
 | Recurring entry requires always-on backend | Missed entries if server down | Backfill mechanism on recovery; health monitoring |
 | Shared mode limited to 2 users | No team/group splitting | Design N-user data model; enforce 2-user cap at app layer |
@@ -498,7 +533,7 @@ DELETE /api/v2/shared-spaces/{id}/members/{user_id} → Leave space
 
 | Risk | Mitigation |
 |---|---|
-| No auth in MVP → anyone on device can view/modify records | Introduce auth as prerequisite for advanced features |
+| Unauthorized access to PostgreSQL database | Implement strict Row-Level Security, strong password hashing (bcrypt), and network firewalls |
 | Receipt images may contain PII (name, card numbers) | Strip EXIF on upload; no raw image persistence beyond 24 hours |
 | Shared space exposes financial data between users | Explicit consent flow on join; instant leave & revoke |
 | Invite link interception | Time-expiring + single-use codes; HTTPS-only |

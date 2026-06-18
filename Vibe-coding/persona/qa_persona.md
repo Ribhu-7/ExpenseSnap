@@ -58,11 +58,11 @@ Flow: Endpoint → Request Validation → Business Logic Validation → Response
 * Test edge cases: OCR unprocessable images (422), duplicate receipt checks, missing parameters, and database query timeout limits.
 
 ### Database & Isolation Testing
-* Validate CRUD, transactions, data persistence, and integrity.
+* Validate PostgreSQL CRUD operations, transactions, data persistence, and relational integrity.
 * **Strict Ledger Isolation Check:** Test that personal entries cannot leak into shared space ledgers (and vice versa) under concurrent sessions.
 
 ### Security Testing
-* Authentication & Authorization checks (Session hijack, Magic Link reuse validation, access tokens).
+* Authentication & Authorization checks (JWT session hijack, secure login/signup via PostgreSQL, access tokens).
 * Input Sanitization: XSS script injections in categories/vendors, CSV injection tests (checking prepended `'` on formulae `=`,`+`,`-`,`@`).
 
 ### Performance Testing
