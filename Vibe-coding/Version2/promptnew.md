@@ -84,3 +84,7 @@ test the entire project by creating test files and update the test cases status 
 create test cases and test file for testing the authentication as well and add status in the test_execution_report there as well , there is error in setup.ts fix that as well
 
 client:525 Failed to create shared space SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON when creating shared workspace please fix it
+
+# TESTING:
+make test cases (mock + audit_report) for every feature which mentioned in your project
+along with migrations scripts (if  db involved)
