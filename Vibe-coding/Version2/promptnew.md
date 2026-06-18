@@ -65,4 +65,16 @@ create a test file for testing the project according to the test cases mentioned
 
 [prd.md] refer to this file and add login authentication feature which includes backend db connection as well with postregesql , replace local storage everything with database , and update it accordingly
 
+initial file:[prd.md] new file:[prd_v2_advanced_features.md] accordingly give me the[kpi.md] , [scope.md] [persona] version 2 which were in prdv2
 
+same way [prd.md] refer to this file and make necessary changes in [kpi.md] , [scope.md] [persona] folders
+
+[Agent]refering to this folder kindly create a database persona as well inside [persona]folder
+
+refering to the [Agent] folder now create the authentication feature in [expense_snap] and properly connect frontend backend database and build and run the project
+
+give me the full walkthrough of running db , backend and frontend for starting and running the project
+
+do the testing of the authentication because it is not working, fix it 
+
+test the project as shared expenses page is not opening please fix it 
